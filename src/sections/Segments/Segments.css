@@ -1,0 +1,9 @@
+.segments {
+  overflow: hidden;
+}
+
+.segments__rows {
+  display: grid;
+  gap: clamp(0.75rem, 0.5rem + 1vw, 1.25rem);
+  margin-top: clamp(3rem, 2rem + 3vw, 4.5rem);
+}

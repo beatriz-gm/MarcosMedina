@@ -1,0 +1,73 @@
+.button {
+  --button-bg: var(--color-primary);
+  --button-fg: var(--color-white);
+  --button-bg-hover: var(--color-primary-strong);
+  --button-border: transparent;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  min-height: 3.25rem;
+  padding: 0.85rem 1.5rem;
+  border: 1px solid var(--button-border);
+  border-radius: var(--radius-pill);
+  background: var(--button-bg);
+  color: var(--button-fg);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  line-height: 1.2;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  transition:
+    background-color var(--duration-fast) ease,
+    color var(--duration-fast) ease,
+    box-shadow var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
+}
+
+.button--sm {
+  min-height: 2.75rem;
+  padding: 0.6rem 1.1rem;
+}
+
+.button--solid {
+  box-shadow: var(--shadow-md);
+}
+
+.button--light {
+  --button-bg: var(--color-white);
+  --button-fg: var(--color-primary);
+  --button-bg-hover: var(--color-primary-soft);
+  box-shadow: 0 14px 34px -14px rgba(17, 17, 17, 0.35);
+}
+
+.button--outline {
+  --button-bg: transparent;
+  --button-fg: currentColor;
+  --button-bg-hover: color-mix(in srgb, currentColor 10%, transparent);
+  --button-border: color-mix(in srgb, currentColor 40%, transparent);
+}
+
+.button:hover {
+  background: var(--button-bg-hover);
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+.button__icon {
+  flex-shrink: 0;
+}
+
+.button__arrow {
+  flex-shrink: 0;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.button:hover .button__arrow,
+.button:focus-visible .button__arrow {
+  transform: translateX(3px);
+}

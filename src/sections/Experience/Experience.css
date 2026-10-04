@@ -1,0 +1,113 @@
+.experience {
+  overflow: hidden;
+}
+
+.stats {
+  --node-size: 3.25rem;
+  position: relative;
+  margin-top: clamp(3.5rem, 2rem + 5vw, 6.5rem);
+}
+
+/* Horizontal data line joining the four milestones. */
+.stats__line {
+  position: absolute;
+  top: calc(var(--node-size) / 2);
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--color-on-primary-line);
+}
+
+.stats__line-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--color-white);
+  transform-origin: left center;
+}
+
+.stats__list {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(1.5rem, 1rem + 2vw, 3rem);
+}
+
+.stat {
+  display: grid;
+  gap: clamp(1.25rem, 1rem + 1vw, 2rem);
+  align-content: start;
+}
+
+.stat__node {
+  display: grid;
+  place-items: center;
+  width: var(--node-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-white);
+  color: var(--color-primary);
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.14);
+}
+
+.stat__body {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.stat__value {
+  font-size: clamp(2.75rem, 2rem + 3vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat__unit {
+  font-size: 0.4em;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.stat__label {
+  max-width: 15rem;
+  color: var(--color-on-primary-muted);
+}
+
+@media (max-width: 62em) {
+  .stats__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 3rem;
+  }
+
+  .stats__line {
+    display: none;
+  }
+}
+
+/* Mobile: the line turns vertical and the milestones are read top to bottom. */
+@media (max-width: 47.5em) {
+  .stats__line {
+    display: block;
+    top: calc(var(--node-size) / 2);
+    bottom: calc(var(--node-size) / 2);
+    left: calc(var(--node-size) / 2);
+    right: auto;
+    width: 1px;
+    height: auto;
+  }
+
+  .stats__line-fill {
+    transform-origin: center top;
+  }
+
+  .stats__list {
+    grid-template-columns: 1fr;
+    gap: 2.25rem;
+  }
+
+  .stat {
+    grid-template-columns: var(--node-size) 1fr;
+    align-items: start;
+    gap: 1.25rem;
+  }
+}

@@ -1,0 +1,48 @@
+.section-heading {
+  position: relative;
+  display: grid;
+  gap: clamp(0.875rem, 0.6rem + 0.8vw, 1.25rem);
+  max-width: 44rem;
+}
+
+.section-heading--center {
+  margin-inline: auto;
+  text-align: center;
+  justify-items: center;
+}
+
+/* Vertical link from the previous section into this eyebrow's dot. */
+.section-heading__connector {
+  position: absolute;
+  bottom: calc(100% - 0.65rem);
+  left: 0.25rem;
+  width: 1px;
+  height: var(--section-space);
+  background: linear-gradient(to bottom, transparent, var(--color-primary-line) 30%, var(--color-primary));
+  transform-origin: top;
+  pointer-events: none;
+}
+
+.theme-primary .section-heading__connector {
+  background: linear-gradient(to bottom, transparent, var(--color-on-primary-line) 30%, var(--color-white));
+}
+
+.section-heading--center .section-heading__connector {
+  left: 50%;
+  bottom: calc(100% - 0.25rem);
+}
+
+/* In centered headings the dot needs to sit at the exact center for the link to land on it. */
+.section-heading--center .eyebrow {
+  flex-direction: column;
+}
+
+.section-heading__kicker {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.theme-primary .section-heading__kicker {
+  color: var(--color-white);
+}

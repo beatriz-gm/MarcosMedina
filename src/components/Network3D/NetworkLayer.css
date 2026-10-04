@@ -1,0 +1,17 @@
+.network-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-network);
+  width: 100%;
+  /* Large viewport height: the canvas does not resize when mobile browser bars move. */
+  height: 100vh;
+  height: 100lvh;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.network-layer.is-ready {
+  opacity: 1;
+}
