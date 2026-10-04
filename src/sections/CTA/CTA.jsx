@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { BrandSymbol } from '../../components/BrandSymbol/BrandSymbol'
 import { Button } from '../../components/Button/Button'
 import { SectionHeading } from '../../components/SectionHeading/SectionHeading'
 import { site } from '../../data/site'
@@ -27,8 +28,16 @@ export function CTA() {
       data-network-state="cta"
       aria-labelledby="cta-title"
     >
-      {/* The converged globe rests beside the text (desktop) or behind it (compact screens). */}
       <div className="container cta__inner">
+        {/*
+          Desktop: the converged globe rests beside the text, centred on this section.
+          Compact screens: it is anchored to (and sized by) this placeholder, above the text.
+          The symbol shows only when the 3D network is not running.
+        */}
+        <div className="cta__globe" data-network-anchor aria-hidden="true">
+          <BrandSymbol className="cta__globe-fallback" />
+        </div>
+
         <SectionHeading
           id="cta-title"
           eyebrow="Contato"

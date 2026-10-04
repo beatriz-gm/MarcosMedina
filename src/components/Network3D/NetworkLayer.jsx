@@ -29,6 +29,11 @@ export function NetworkLayer() {
   const [shouldLoad, setShouldLoad] = useState(false)
   const [isReady, setIsReady] = useState(false)
 
+  // Lets the page swap static stand-ins for the live network (see .cta__globe).
+  useEffect(() => {
+    document.documentElement.classList.toggle('network-live', isReady && !reduceMotion)
+  }, [isReady, reduceMotion])
+
   useEffect(() => {
     if (!supportsWebGL()) return undefined
     if ('requestIdleCallback' in window) {

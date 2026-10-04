@@ -25,11 +25,16 @@
   max-width: 34rem;
 }
 
-/* Compact screens: no room side by side, so text and globe share the centre. */
+/* Placeholder for the globe on compact screens only. */
+.cta__globe {
+  display: none;
+}
+
+/* Compact screens: no room side by side, so the globe sits above the centred text. */
 @media (max-width: 62em) {
   .cta {
     background:
-      radial-gradient(42rem 32rem at 50% 50%, rgba(255, 255, 255, 0.1), transparent 70%),
+      radial-gradient(32rem 32rem at 50% 30%, rgba(255, 255, 255, 0.1), transparent 70%),
       var(--color-primary);
   }
 
@@ -37,6 +42,23 @@
     grid-template-columns: 1fr;
     justify-items: center;
     text-align: center;
+  }
+
+  .cta__globe {
+    display: grid;
+    place-items: center;
+    width: min(68vw, 20rem);
+    aspect-ratio: 1;
+  }
+
+  .cta__globe-fallback {
+    width: 45%;
+    color: var(--color-white);
+    transition: opacity 0.6s ease;
+  }
+
+  .network-live .cta__globe-fallback {
+    opacity: 0;
   }
 
   .cta__inner .section-heading {
@@ -48,9 +70,9 @@
     flex-direction: column;
   }
 
+  /* The globe already links into this section, so the connector line is not needed. */
   .cta__inner .section-heading__connector {
-    left: 50%;
-    bottom: calc(100% - 0.25rem);
+    display: none;
   }
 }
 

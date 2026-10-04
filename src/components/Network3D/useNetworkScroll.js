@@ -24,7 +24,14 @@ export function useNetworkScroll() {
       const sections = STATE_ORDER.map((name) => document.querySelector(`[data-network-state="${name}"]`))
       const rects = sections.map((el) => el?.getBoundingClientRect())
       sectionTops = rects.map((rect) => (rect ? rect.top + scrollY : null))
-      networkStore.sectionCenters = rects.map((rect) => (rect ? rect.top + rect.height / 2 + scrollY : null))
+      networkStore.anchors = sections.map((section) => {
+        if (!section) return null
+        // A visible placeholder inside the section takes precedence over the section itself.
+        const placeholder = section.querySelector('[data-network-anchor]')
+        const usePlaceholder = placeholder && placeholder.offsetHeight > 0
+        const rect = (usePlaceholder ? placeholder : section).getBoundingClientRect()
+        return { center: rect.top + rect.height / 2 + scrollY, width: usePlaceholder ? rect.width : null }
+      })
       networkStore.primaryBands = [...document.querySelectorAll('.theme-primary')].map((el) => {
         const rect = el.getBoundingClientRect()
         return [rect.top + scrollY, rect.bottom + scrollY]

@@ -16,12 +16,4 @@ export const site = {
   developer: 'Beatriz Medina',
 }
 
-export const navigation = [
-  { id: 'servicos', label: 'Soluções' },
-  { id: 'segmentos', label: 'Segmentos' },
-  { id: 'experiencia', label: 'Experiência' },
-  { id: 'diagnostico', label: 'Diagnóstico' },
-  { id: 'contato', label: 'Contato' },
-]
-
 export const heroTags = ['Firewall', 'Redes', 'VPN', 'Servidores', 'Cloud Backup', 'Wireless']

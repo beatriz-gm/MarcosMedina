@@ -1,6 +1,6 @@
 import { Icon } from '../../components/Icon/Icon'
 import { Logo } from '../../components/Logo/Logo'
-import { heroTags, navigation, site } from '../../data/site'
+import { heroTags, site } from '../../data/site'
 import './Footer.css'
 
 const contactLinks = [
@@ -24,17 +24,6 @@ export function Footer() {
             <Logo variant="blue" height={72} />
             <p>{heroTags.join(' • ')}</p>
           </div>
-
-          <nav className="footer__column" aria-label="Seções">
-            <h2 className="footer__title">Navegação</h2>
-            <ul>
-              {navigation.map((item) => (
-                <li key={item.id}>
-                  <a href={`#${item.id}`}>{item.label}</a>
-                </li>
-              ))}
-            </ul>
-          </nav>
 
           <div className="footer__column">
             <h2 className="footer__title">Contato</h2>

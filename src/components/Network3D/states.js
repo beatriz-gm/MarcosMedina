@@ -61,8 +61,8 @@ const defaults = {
   /** On compact screens, pull the camera back until the whole shape fits the width. */
   contain: false,
   /**
-   * Locks the shape to the centre of its section: it scrolls in with the section, rests
-   * at the centre of the screen when the section does, and leaves with it.
+   * Locks the shape to its section (or to a visible `[data-network-anchor]` inside it,
+   * which also sets its size): it scrolls in with it and leaves with it.
    */
   anchor: false,
   camera: { position: [0, 0, 15], target: [0, 0, 0] },
@@ -120,13 +120,13 @@ const STATES = {
     compact: { center: [0, 0, -2], width: 7, height: 16, depth: 4 },
   },
   cta: {
-    // Stable, converged globe: beside the text on wide screens, behind it on compact ones.
+    // Stable, converged globe: beside the text on wide screens, above it on compact ones.
     shape: sphere,
     motion: 0,
     contain: true,
     anchor: true,
-    wide: { center: [4.4, 0, -1], radius: 3.2, noise: 0.06, variance: 0.05, opacity: 1 },
-    compact: { center: [0, 0, -1], radius: 2.1, noise: 0.05, variance: 0.05, opacity: 0.55 },
+    wide: { center: [4.4, 0, -1], radius: 3.2, noise: 0.06, variance: 0.05 },
+    compact: { center: [0, 0, -1], radius: 2.1, noise: 0.05, variance: 0.05 },
   },
 }
 
@@ -139,8 +139,7 @@ export function getStates(order, isCompact) {
   return order.map((name) => {
     const { shape, wide, compact, ...common } = STATES[name]
     const params = isCompact ? compact : wide
-    // Layout params may also override the state's opacity per screen type.
-    const state = { ...defaults, ...common, ...(params.opacity !== undefined && { opacity: params.opacity }) }
+    const state = { ...defaults, ...common }
     const resolved = {
       ...state,
       name,

@@ -49,7 +49,7 @@ esfera final caibam inteiras na largura da tela.
 | `segments` | Faixa horizontal com fluxo de dados, como as faixas de segmentos | | |
 | `experience` | Túnel atravessado pela câmera durante a seção | | |
 | `diagnostic` | Estrutura solta; um ponto crítico acende para cada sinal lido | | |
-| `cta` | Globo estável e parado, preso ao centro da seção: entra com ela, fica no centro da tela quando a seção está centralizada e sai com ela | À direita, texto à esquerda | Centralizado, atrás do texto centralizado |
+| `cta` | Globo estável e parado que acompanha a seção com movimento amortecido (sem tremer), entrando e saindo com ela | À direita, texto à esquerda | Acima do texto, preso e dimensionado pelo elemento `.cta__globe` (`data-network-anchor`) |
 
 Cada estado é apenas um mapeamento diferente da mesma grade lógica de nós
 (`components/Network3D/states.js`), por isso as conexões continuam curtas e coerentes durante as

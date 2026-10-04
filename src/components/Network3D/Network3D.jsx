@@ -31,8 +31,12 @@ const STATIC_OPACITY = 0.5
 const smoothstep = (t) => t * t * (3 - 2 * t)
 const clamp01 = (t) => Math.min(1, Math.max(0, t))
 
-/** Requests frames at a fixed rate when the canvas runs with frameloop="demand". */
-function FrameLimiter({ fps }) {
+/**
+ * Requests frames at a fixed rate when the canvas runs with frameloop="demand".
+ * Past `fullRateAfter` (narrative progress) it renders every display frame instead,
+ * so a shape that follows the page scroll moves as smoothly as the page itself.
+ */
+function FrameLimiter({ fps, fullRateAfter }) {
   const invalidate = useThree((state) => state.invalidate)
 
   useEffect(() => {
@@ -40,12 +44,13 @@ function FrameLimiter({ fps }) {
     let last = 0
     let id = requestAnimationFrame(function tick(now) {
       id = requestAnimationFrame(tick)
-      if (now - last < interval - 1) return
+      const isFullRate = fullRateAfter !== null && networkStore.progress > fullRateAfter
+      if (!isFullRate && now - last < interval - 1) return
       last = now
       invalidate()
     })
     return () => cancelAnimationFrame(id)
-  }, [fps, invalidate])
+  }, [fps, fullRateAfter, invalidate])
 
   return null
 }
@@ -60,17 +65,16 @@ function NetworkScene({ isCompact, quality, reduceMotion, parallax }) {
   )
   const perf = useRef({ frames: 0, time: 0, done: false })
 
-  // On-demand rendering (reduced motion, or the 30 fps cap on phones) also renders on
-  // scroll where a shape is tied to the page, so it never lags behind its section.
+  // Transition into the first anchored state (it follows the page scroll).
+  const anchorIndex = model.states.findIndex((state) => state.anchor)
+  const fullRateAfter = anchorIndex > 0 ? anchorIndex - 1 : null
+
+  // Without continuous animation the scene only needs a new frame when the page scrolls.
   useEffect(() => {
-    if (!reduceMotion && !quality.fps) return undefined
-    const anchoredFrom = model.states.findIndex((state) => state.anchor) - 1
-    const onScroll = () => {
-      if (reduceMotion || (anchoredFrom >= 0 && networkStore.progress > anchoredFrom)) invalidate()
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [reduceMotion, quality.fps, model, invalidate])
+    if (!reduceMotion) return undefined
+    window.addEventListener('scroll', invalidate, { passive: true })
+    return () => window.removeEventListener('scroll', invalidate)
+  }, [reduceMotion, invalidate])
 
   useFrame((state, rawDelta) => {
     const delta = Math.min(rawDelta, 0.05)
@@ -171,6 +175,7 @@ function NetworkScene({ isCompact, quality, reduceMotion, parallax }) {
 
   return (
     <>
+      {!reduceMotion && quality.fps > 0 && <FrameLimiter fps={quality.fps} fullRateAfter={fullRateAfter} />}
       <CameraRig states={model.states} frame={frame} isCompact={isCompact} parallax={parallax} />
       <Connections model={model} uniforms={uniforms} />
       <Nodes model={model} uniforms={uniforms} sizeScale={quality.nodeSize} />
@@ -209,7 +214,6 @@ export default function Network3D({ isCompact, isLowPower, reduceMotion, onReady
       frameloop={reduceMotion || quality.fps ? 'demand' : 'always'}
       onCreated={onReady}
     >
-      {!reduceMotion && quality.fps > 0 && <FrameLimiter fps={quality.fps} />}
       <NetworkScene isCompact={isCompact} quality={quality} reduceMotion={reduceMotion} parallax={parallax} />
     </Canvas>
   )
