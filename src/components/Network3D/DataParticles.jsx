@@ -28,6 +28,7 @@ const vertexShader = /* glsl */ `
 const fragmentShader = /* glsl */ `
   uniform float uAlphaOnLight;
   uniform float uAlphaOnPrimary;
+  uniform float uFlowOpacity;
   varying float vAlpha;
   ${themeChunk}
 
@@ -39,7 +40,7 @@ const fragmentShader = /* glsl */ `
     float primary = onPrimary();
     vec3 color = mix(uColorOnLight, uColorOnPrimary, primary);
     float alpha = mix(uAlphaOnLight, uAlphaOnPrimary, primary);
-    gl_FragColor = vec4(color, shape * alpha * vAlpha * uOpacity);
+    gl_FragColor = vec4(color, shape * alpha * vAlpha * uOpacity * uFlowOpacity);
   }
 `
 

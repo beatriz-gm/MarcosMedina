@@ -42,14 +42,6 @@ export function Hero() {
     >
       <div className="container hero__inner">
         <div className="hero__content">
-          <ul className="hero__tags" aria-label="Soluções" data-hero-reveal>
-            {heroTags.map((tag) => (
-              <li key={tag} className="hero__tag">
-                {tag}
-              </li>
-            ))}
-          </ul>
-
           <h1 id="hero-title" className="hero__title">
             <span className="hero__title-mask">
               <span className="hero__title-line">Sua empresa está</span>
@@ -63,6 +55,14 @@ export function Hero() {
             Segurança e infraestrutura de redes para manter seus dados protegidos, seus sistemas disponíveis e sua
             operação funcionando.
           </p>
+
+          <ul className="hero__tags" aria-label="Soluções" data-hero-reveal>
+            {heroTags.map((tag) => (
+              <li key={tag} className="hero__tag">
+                {tag}
+              </li>
+            ))}
+          </ul>
 
           <div className="hero__actions" data-hero-reveal>
             <Button href={site.whatsappUrl} external variant="light" icon="whatsapp">

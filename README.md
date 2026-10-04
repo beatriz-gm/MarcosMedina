@@ -37,15 +37,19 @@ de todo o conteúdo e se reorganiza conforme a seção visível. Os fundos das s
 tela e desenha a rede em branco sobre o azul e em azul sobre o branco, trocando de cor
 exatamente na borda da seção.
 
-| Seção (`data-network-state`) | Desktop | Mobile |
-| --- | --- | --- |
-| `hero` | Nuvem 3D ampla à direita, parallax com o cursor | Nuvem no topo, texto abaixo |
-| `benefits` | Câmera “entra” na rede, que envolve o conteúdo | Coluna vertical; a câmera desce com o scroll |
-| `services` | Rede organizada como planta/piso de infraestrutura + topologia interativa em SVG | Tronco vertical com serviços em ramos (●──●) |
-| `segments` | Faixa horizontal com fluxo de dados para a direita, como as faixas de segmentos | Igual, mais estreita |
-| `experience` | Túnel atravessado pela câmera durante a seção | Túnel mais estreito |
-| `diagnostic` | Estrutura solta; um ponto crítico acende para cada sinal lido | Coluna vertical, mesma lógica |
-| `cta` | Rede converge numa esfera estável | Esfera menor acima do texto |
+Desktop e mobile contam a mesma história com as mesmas formas; no mobile cada forma é apenas
+redimensionada/centralizada, e a câmera recua automaticamente para que a nuvem do hero e a
+esfera final caibam inteiras na largura da tela.
+
+| Seção (`data-network-state`) | Rede | Desktop | Mobile |
+| --- | --- | --- | --- |
+| `hero` | Nuvem 3D ampla | À direita, parallax com o cursor | No topo, texto abaixo |
+| `benefits` | Câmera “entra” na rede, que envolve o conteúdo | | |
+| `services` | Rede organizada como piso de infraestrutura | + topologia interativa em SVG | + tronco vertical com serviços em ramos (●──●) |
+| `segments` | Faixa horizontal com fluxo de dados, como as faixas de segmentos | | |
+| `experience` | Túnel atravessado pela câmera durante a seção | | |
+| `diagnostic` | Estrutura solta; um ponto crítico acende para cada sinal lido | | |
+| `cta` | Esfera estável, **parada** no centro da tela, atrás do conteúdo centralizado | | |
 
 Cada estado é apenas um mapeamento diferente da mesma grade lógica de nós
 (`components/Network3D/states.js`), por isso as conexões continuam curtas e coerentes durante as
@@ -77,8 +81,11 @@ scripts/prerender.js  injeta o HTML renderizado no dist/index.html (SEO e primei
 
 - O 3D (three + R3F) é um chunk separado, carregado quando o navegador fica ocioso; o HTML
   chega pré-renderizado, então o texto aparece antes de qualquer JavaScript.
-- Mobile: menos nós e pacotes de dados, sem antialias, pixel ratio limitado e sem parallax de
-  cursor. Se os primeiros frames forem lentos, o pixel ratio cai para 1 automaticamente.
+- Mobile: a mesma cena com menos nós (77 em vez de 126) e pacotes de dados, sem antialias,
+  pixel ratio limitado, 30 fps e sem parallax de cursor. Se os primeiros frames forem lentos,
+  o pixel ratio cai para 1 automaticamente.
+- Header: apenas a logo. No mobile, um botão redondo de WhatsApp aparece no canto inferior
+  direito durante a rolagem (some no hero e na seção de contato, que já têm o botão).
 - `prefers-reduced-motion`: rede estática e discreta, sem partículas nem câmera, faixas de
   segmentos viram lista, contadores e entradas não animam. Todo o conteúdo continua acessível.
 - O canvas é decorativo (`aria-hidden`); toda informação existe em HTML semântico.

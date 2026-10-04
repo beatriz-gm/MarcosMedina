@@ -1,52 +1,27 @@
 .cta {
+  display: grid;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
   background:
-    radial-gradient(50rem 32rem at 80% 50%, rgba(255, 255, 255, 0.12), transparent 70%),
+    radial-gradient(42rem 32rem at 50% 50%, rgba(255, 255, 255, 0.1), transparent 70%),
     var(--color-primary);
 }
 
 .cta__inner {
   display: grid;
+  justify-items: center;
   gap: clamp(2rem, 1.5rem + 2vw, 3rem);
-  max-width: var(--container-width);
+  text-align: center;
 }
 
 .cta__inner .section-heading {
-  max-width: 38rem;
-}
-
-.cta__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem 2rem;
-}
-
-.cta__email {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-weight: 600;
-  color: var(--color-on-primary-muted);
-  transition: color var(--duration-fast) ease;
-}
-
-.cta__email:hover {
-  color: var(--color-white);
-}
-
-@media (max-width: 62em) {
-  .cta {
-    /* Leaves room for the converged network above the text. */
-    padding-top: calc(var(--section-space) + clamp(10rem, 30svh, 16rem));
-  }
+  max-width: 40rem;
 }
 
 @media (max-width: 47.5em) {
+  .cta__actions,
   .cta__actions .button {
     width: 100%;
-  }
-
-  .cta__actions {
-    justify-content: center;
   }
 }

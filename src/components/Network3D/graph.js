@@ -1,9 +1,10 @@
 import { getStates } from './states'
 import { STATE_ORDER } from './networkStore'
 
+// Compact screens use the same shapes with fewer nodes, to keep mobile GPUs and CPUs light.
 const GRID = {
   wide: { columns: 14, rows: 9 },
-  vertical: { columns: 7, rows: 12 },
+  compact: { columns: 11, rows: 7 },
 }
 
 // Share of grid links kept, and chance of an extra diagonal, so the mesh reads as organic.
@@ -25,9 +26,9 @@ function createRandom(seed) {
  * Builds the graph once: nodes on a logical grid, neighbour edges, adjacency for the
  * data packets, and the precomputed position of every node in every narrative state.
  */
-export function createNetworkModel({ isVertical, riskCount }) {
-  const { columns, rows } = isVertical ? GRID.vertical : GRID.wide
-  const random = createRandom(isVertical ? 7 : 11)
+export function createNetworkModel({ isCompact, riskCount }) {
+  const { columns, rows } = isCompact ? GRID.compact : GRID.wide
+  const random = createRandom(isCompact ? 7 : 11)
   const signed = () => random() * 2 - 1
 
   const nodes = []
@@ -90,14 +91,17 @@ export function createNetworkModel({ isVertical, riskCount }) {
     risk[Math.floor(((rank - 0.5) / riskCount) * count)] = rank
   }
 
-  const states = getStates(STATE_ORDER, isVertical)
+  const states = getStates(STATE_ORDER, isCompact)
   const layouts = states.map((state) => {
     const positions = new Float32Array(count * 3)
+    // Horizontal reach of the shape around its centre, used by the camera to contain it.
+    state.halfWidth = 0
     nodes.forEach((node, index) => {
       const [x, y, z] = state.layout(node)
       positions[index * 3] = x + state.offset[0]
       positions[index * 3 + 1] = y + state.offset[1]
       positions[index * 3 + 2] = z + state.offset[2]
+      state.halfWidth = Math.max(state.halfWidth, Math.abs(x + state.offset[0] - state.center[0]))
     })
     return positions
   })

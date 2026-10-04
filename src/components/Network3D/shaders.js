@@ -19,6 +19,7 @@ export function createSharedUniforms() {
     uTime: { value: 0 },
     uPixelRatio: { value: 1 },
     uOpacity: { value: 1 },
+    uFlowOpacity: { value: 1 },
     uBands: { value: Array.from({ length: MAX_BANDS }, () => new Vector2(-1, -1)) },
     uBandCount: { value: 0 },
     uColorOnLight: { value: hexToVector('#2b73b8') },

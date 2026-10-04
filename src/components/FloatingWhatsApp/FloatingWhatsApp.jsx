@@ -4,8 +4,8 @@ import { Icon } from '../Icon/Icon'
 import './FloatingWhatsApp.css'
 
 /**
- * Mobile-only shortcut to the main conversion. It stays out of the way while the hero
- * or the contact section (which already show the call to action) are on screen.
+ * Mobile-only WhatsApp shortcut in the bottom-right corner. It stays out of the way
+ * while the hero or the contact section (which already show the call to action) are on screen.
  */
 export function FloatingWhatsApp() {
   const [isVisible, setIsVisible] = useState(false)
@@ -38,9 +38,8 @@ export function FloatingWhatsApp() {
       tabIndex={isVisible ? undefined : -1}
       aria-hidden={isVisible ? undefined : 'true'}
     >
-      <Icon name="whatsapp" size={22} />
-      <span>Falar com especialista</span>
-      <span className="visually-hidden"> pelo WhatsApp (abre em nova aba)</span>
+      <Icon name="whatsapp" size={28} />
+      <span className="visually-hidden">Falar com especialista pelo WhatsApp (abre em nova aba)</span>
     </a>
   )
 }

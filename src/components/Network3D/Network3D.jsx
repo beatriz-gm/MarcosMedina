@@ -10,9 +10,10 @@ import { networkStore } from './networkStore'
 import { Nodes } from './Nodes'
 import { createSharedUniforms, MAX_BANDS } from './shaders'
 
+// Low power (phones): same scene, fewer packets, no antialias, capped pixel ratio and 30 fps.
 const QUALITY = {
-  high: { dpr: [1, 1.75], antialias: true, packets: 64, trail: 3, nodeSize: 190, packetSize: 150 },
-  low: { dpr: [1, 1.5], antialias: false, packets: 26, trail: 2, nodeSize: 170, packetSize: 140 },
+  high: { dpr: [1, 1.75], antialias: true, packets: 64, trail: 3, nodeSize: 190, packetSize: 150, fps: 0 },
+  low: { dpr: [1, 1.35], antialias: false, packets: 24, trail: 2, nodeSize: 175, packetSize: 140, fps: 30 },
 }
 
 // Share of a transition used to stagger nodes, so the network reorganises organically.
@@ -20,8 +21,9 @@ const STAGGER = 0.35
 const DRIFT = 0.1
 const PROGRESS_DAMPING = 3.5
 const POINTER_DAMPING = 3
-// Average frame time above which the pixel ratio is dropped to 1.
+// Average frame time above which the pixel ratio is dropped to 1 (relative to the target rate).
 const SLOW_FRAME = 1 / 40
+const SLOW_FRAME_TOLERANCE = 1.3
 const PERF_SAMPLE = { skip: 30, frames: 90 }
 // The static (reduced motion) network stays behind every section, so it is kept subtle.
 const STATIC_OPACITY = 0.5
@@ -29,11 +31,33 @@ const STATIC_OPACITY = 0.5
 const smoothstep = (t) => t * t * (3 - 2 * t)
 const clamp01 = (t) => Math.min(1, Math.max(0, t))
 
-function NetworkScene({ isVertical, quality, reduceMotion, parallax }) {
+/** Requests frames at a fixed rate when the canvas runs with frameloop="demand". */
+function FrameLimiter({ fps }) {
+  const invalidate = useThree((state) => state.invalidate)
+
+  useEffect(() => {
+    const interval = 1000 / fps
+    let last = 0
+    let id = requestAnimationFrame(function tick(now) {
+      id = requestAnimationFrame(tick)
+      if (now - last < interval - 1) return
+      last = now
+      invalidate()
+    })
+    return () => cancelAnimationFrame(id)
+  }, [fps, invalidate])
+
+  return null
+}
+
+function NetworkScene({ isCompact, quality, reduceMotion, parallax }) {
   const { gl, size, setDpr, invalidate } = useThree()
-  const model = useMemo(() => createNetworkModel({ isVertical, riskCount: warningSigns.length }), [isVertical])
+  const model = useMemo(() => createNetworkModel({ isCompact, riskCount: warningSigns.length }), [isCompact])
   const uniforms = useMemo(createSharedUniforms, [])
-  const frame = useMemo(() => ({ progress: 0, from: 0, to: 0, ease: 0, local: [], pointer: { x: 0, y: 0 } }), [])
+  const frame = useMemo(
+    () => ({ progress: 0, from: 0, to: 0, ease: 0, motion: 1, local: [], pointer: { x: 0, y: 0 } }),
+    [],
+  )
   const perf = useRef({ frames: 0, time: 0, done: false })
 
   // Without continuous animation the scene only needs a new frame when the page scrolls.
@@ -73,6 +97,10 @@ function NetworkScene({ isVertical, quality, reduceMotion, parallax }) {
     uniforms.uRiskWeight.value = blend('riskWeight')
     uniforms.uRiskLevel.value = MathUtils.damp(uniforms.uRiskLevel.value, networkStore.riskLevel, 6, delta)
 
+    // Still states (the closing CTA) freeze drift, sway and parallax and fade the packets.
+    frame.motion = reduceMotion ? 0 : blend('motion')
+    uniforms.uFlowOpacity.value = frame.motion
+
     networkStore.velocity *= Math.exp(-delta * 3)
     dynamics.flowBias = blend('flowBias')
     dynamics.flowSpeed = 1 + networkStore.velocity * 4
@@ -91,7 +119,7 @@ function NetworkScene({ isVertical, quality, reduceMotion, parallax }) {
     const cz = a.center[2] + (b.center[2] - a.center[2]) * frame.ease
     const from = layouts[frame.from]
     const to = layouts[frame.to]
-    const drift = reduceMotion ? 0 : DRIFT
+    const drift = DRIFT * frame.motion
 
     for (let i = 0; i < nodes.length; i += 1) {
       const node = nodes[i]
@@ -130,14 +158,15 @@ function NetworkScene({ isVertical, quality, reduceMotion, parallax }) {
       if (sample.frames > PERF_SAMPLE.skip) sample.time += rawDelta
       if (sample.frames === PERF_SAMPLE.skip + PERF_SAMPLE.frames) {
         sample.done = true
-        if (sample.time / PERF_SAMPLE.frames > SLOW_FRAME) setDpr(1)
+        const budget = quality.fps ? SLOW_FRAME_TOLERANCE / quality.fps : SLOW_FRAME
+        if (sample.time / PERF_SAMPLE.frames > budget) setDpr(1)
       }
     }
   }, -2)
 
   return (
     <>
-      <CameraRig states={model.states} frame={frame} isVertical={isVertical} parallax={parallax} />
+      <CameraRig states={model.states} frame={frame} isCompact={isCompact} parallax={parallax} />
       <Connections model={model} uniforms={uniforms} />
       <Nodes model={model} uniforms={uniforms} sizeScale={quality.nodeSize} />
       {!reduceMotion && (
@@ -153,7 +182,7 @@ function NetworkScene({ isVertical, quality, reduceMotion, parallax }) {
   )
 }
 
-export default function Network3D({ isVertical, isLowPower, reduceMotion, onReady }) {
+export default function Network3D({ isCompact, isLowPower, reduceMotion, onReady }) {
   const quality = isLowPower ? QUALITY.low : QUALITY.high
   const parallax = !isLowPower && !reduceMotion
 
@@ -170,12 +199,13 @@ export default function Network3D({ isVertical, isLowPower, reduceMotion, onRead
   return (
     <Canvas
       dpr={quality.dpr}
-      gl={{ antialias: quality.antialias, alpha: true, powerPreference: 'high-performance' }}
+      gl={{ antialias: quality.antialias, alpha: true, powerPreference: isLowPower ? 'low-power' : 'high-performance' }}
       camera={{ fov: 40, near: 0.1, far: 120, position: [0, 0, 15] }}
-      frameloop={reduceMotion ? 'demand' : 'always'}
+      frameloop={reduceMotion || quality.fps ? 'demand' : 'always'}
       onCreated={onReady}
     >
-      <NetworkScene isVertical={isVertical} quality={quality} reduceMotion={reduceMotion} parallax={parallax} />
+      {!reduceMotion && quality.fps > 0 && <FrameLimiter fps={quality.fps} />}
+      <NetworkScene isCompact={isCompact} quality={quality} reduceMotion={reduceMotion} parallax={parallax} />
     </Canvas>
   )
 }

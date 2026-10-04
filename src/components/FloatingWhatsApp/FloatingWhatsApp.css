@@ -5,33 +5,34 @@
 @media (max-width: 47.5em) {
   .floating-whatsapp {
     position: fixed;
-    left: 50%;
+    right: max(1rem, env(safe-area-inset-right));
     bottom: max(1rem, env(safe-area-inset-bottom));
     z-index: var(--z-floating);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.625rem;
-    padding: 0.85rem 1.4rem;
-    border-radius: var(--radius-pill);
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: var(--text-sm);
-    font-weight: 700;
-    white-space: nowrap;
     box-shadow:
-      0 0 0 4px rgba(255, 255, 255, 0.9),
-      0 16px 30px -10px rgba(43, 115, 184, 0.55);
+      0 0 0 3px rgba(255, 255, 255, 0.9),
+      0 14px 28px -10px rgba(43, 115, 184, 0.6);
     opacity: 0;
     pointer-events: none;
-    transform: translate(-50%, 140%);
+    transform: translateY(1rem) scale(0.8);
     transition:
       opacity var(--duration-base) ease,
-      transform 480ms var(--ease-out);
+      transform 420ms var(--ease-out);
   }
 
   .floating-whatsapp.is-visible {
     opacity: 1;
     pointer-events: auto;
-    transform: translate(-50%, 0);
+    transform: none;
+  }
+
+  .floating-whatsapp:active {
+    transform: scale(0.94);
   }
 }

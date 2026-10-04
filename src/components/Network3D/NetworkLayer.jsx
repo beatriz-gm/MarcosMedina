@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { useReducedMotion } from '../../hooks/useReducedMotion'
-import { MOBILE_QUERY, VERTICAL_LAYOUT_QUERY } from '../../lib/media'
+import { MOBILE_QUERY, COMPACT_LAYOUT_QUERY } from '../../lib/media'
 import { useNetworkScroll } from './useNetworkScroll'
 import './NetworkLayer.css'
 
@@ -24,7 +24,7 @@ function supportsWebGL() {
 export function NetworkLayer() {
   useNetworkScroll()
   const reduceMotion = useReducedMotion()
-  const isVertical = useMediaQuery(VERTICAL_LAYOUT_QUERY)
+  const isCompact = useMediaQuery(COMPACT_LAYOUT_QUERY)
   const isLowPower = useMediaQuery(MOBILE_QUERY)
   const [shouldLoad, setShouldLoad] = useState(false)
   const [isReady, setIsReady] = useState(false)
@@ -44,8 +44,8 @@ export function NetworkLayer() {
       {shouldLoad && (
         <Suspense fallback={null}>
           <Network3D
-            key={isVertical ? 'vertical' : 'wide'}
-            isVertical={isVertical}
+            key={isCompact ? 'compact' : 'wide'}
+            isCompact={isCompact}
             isLowPower={isLowPower}
             reduceMotion={reduceMotion}
             onReady={() => setIsReady(true)}
