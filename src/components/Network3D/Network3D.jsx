@@ -60,12 +60,17 @@ function NetworkScene({ isCompact, quality, reduceMotion, parallax }) {
   )
   const perf = useRef({ frames: 0, time: 0, done: false })
 
-  // Without continuous animation the scene only needs a new frame when the page scrolls.
+  // On-demand rendering (reduced motion, or the 30 fps cap on phones) also renders on
+  // scroll where a shape is tied to the page, so it never lags behind its section.
   useEffect(() => {
-    if (!reduceMotion) return undefined
-    window.addEventListener('scroll', invalidate, { passive: true })
-    return () => window.removeEventListener('scroll', invalidate)
-  }, [reduceMotion, invalidate])
+    if (!reduceMotion && !quality.fps) return undefined
+    const anchoredFrom = model.states.findIndex((state) => state.anchor) - 1
+    const onScroll = () => {
+      if (reduceMotion || (anchoredFrom >= 0 && networkStore.progress > anchoredFrom)) invalidate()
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [reduceMotion, quality.fps, model, invalidate])
 
   useFrame((state, rawDelta) => {
     const delta = Math.min(rawDelta, 0.05)

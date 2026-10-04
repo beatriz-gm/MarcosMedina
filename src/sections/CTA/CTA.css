@@ -1,22 +1,57 @@
 .cta {
   display: grid;
   align-items: center;
+  /* Full screen height: the globe locks to the centre of this section. */
   min-height: 100vh;
   min-height: 100svh;
   background:
-    radial-gradient(42rem 32rem at 50% 50%, rgba(255, 255, 255, 0.1), transparent 70%),
+    radial-gradient(42rem 32rem at 75% 50%, rgba(255, 255, 255, 0.1), transparent 70%),
     var(--color-primary);
 }
 
+/* Text on the left half; the globe occupies the right half of the screen. */
 .cta__inner {
   display: grid;
-  justify-items: center;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  justify-items: start;
   gap: clamp(2rem, 1.5rem + 2vw, 3rem);
-  text-align: center;
+}
+
+.cta__inner > * {
+  grid-column: 1;
 }
 
 .cta__inner .section-heading {
-  max-width: 40rem;
+  max-width: 34rem;
+}
+
+/* Compact screens: no room side by side, so text and globe share the centre. */
+@media (max-width: 62em) {
+  .cta {
+    background:
+      radial-gradient(42rem 32rem at 50% 50%, rgba(255, 255, 255, 0.1), transparent 70%),
+      var(--color-primary);
+  }
+
+  .cta__inner {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .cta__inner .section-heading {
+    justify-items: center;
+    margin-inline: auto;
+  }
+
+  .cta__inner .eyebrow {
+    flex-direction: column;
+  }
+
+  .cta__inner .section-heading__connector {
+    left: 50%;
+    bottom: calc(100% - 0.25rem);
+  }
 }
 
 @media (max-width: 47.5em) {

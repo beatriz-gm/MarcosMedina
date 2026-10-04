@@ -27,14 +27,13 @@ export function CTA() {
       data-network-state="cta"
       aria-labelledby="cta-title"
     >
-      {/* The converged network rests, still, at the centre of the screen behind this content. */}
+      {/* The converged globe rests beside the text (desktop) or behind it (compact screens). */}
       <div className="container cta__inner">
         <SectionHeading
           id="cta-title"
           eyebrow="Contato"
           title="Vamos avaliar a infraestrutura da sua empresa?"
           lead="Entenda quais soluções podem tornar sua rede mais segura e preparada para a sua operação."
-          align="center"
         />
 
         <div className="cta__actions">

@@ -21,10 +21,10 @@ export function useNetworkScroll() {
 
     const measure = () => {
       const scrollY = window.scrollY
-      sectionTops = STATE_ORDER.map((name) => {
-        const el = document.querySelector(`[data-network-state="${name}"]`)
-        return el ? el.getBoundingClientRect().top + scrollY : null
-      })
+      const sections = STATE_ORDER.map((name) => document.querySelector(`[data-network-state="${name}"]`))
+      const rects = sections.map((el) => el?.getBoundingClientRect())
+      sectionTops = rects.map((rect) => (rect ? rect.top + scrollY : null))
+      networkStore.sectionCenters = rects.map((rect) => (rect ? rect.top + rect.height / 2 + scrollY : null))
       networkStore.primaryBands = [...document.querySelectorAll('.theme-primary')].map((el) => {
         const rect = el.getBoundingClientRect()
         return [rect.top + scrollY, rect.bottom + scrollY]

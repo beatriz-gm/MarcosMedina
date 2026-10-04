@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { MathUtils, Vector3 } from 'three'
+import { networkStore } from './networkStore'
 
 // Wide layouts are composed for 16:9; narrower desktop windows pull the camera back to fit.
 const WIDE_REFERENCE_ASPECT = 16 / 9
@@ -12,7 +13,8 @@ const PARALLAX = { x: 0.7, y: 0.45 }
 /**
  * Moves the camera between the per-state viewpoints. While a state is active its
  * `travel` is applied using the section's own scroll progress (e.g. flying through
- * the tunnel). Pointer parallax is desktop-only and fades out in still states.
+ * the tunnel). Anchored states stay locked to the centre of their section, scrolling
+ * in and out with it. Pointer parallax is desktop-only and fades out in still states.
  */
 export function CameraRig({ states, frame, isCompact, parallax }) {
   const vectors = useMemo(
@@ -31,8 +33,9 @@ export function CameraRig({ states, frame, isCompact, parallax }) {
     const tanHalfFov = Math.tan(MathUtils.degToRad(camera.fov / 2))
 
     // Viewpoint of one state, written into `out`.
-    const resolve = (state, local, out) => {
-      vectors.offset.fromArray(state.travel).multiplyScalar(local)
+    const resolve = (index, out) => {
+      const state = states[index]
+      vectors.offset.fromArray(state.travel).multiplyScalar(frame.local[index] ?? 0)
       out.position.fromArray(state.camera.position).add(vectors.offset)
       out.target.fromArray(state.camera.target).add(vectors.offset)
 
@@ -46,10 +49,21 @@ export function CameraRig({ states, frame, isCompact, parallax }) {
         }
       }
       out.position.sub(out.target).multiplyScalar(fit).add(out.target)
+
+      const sectionCenter = networkStore.sectionCenters[index]
+      if (state.anchor && sectionCenter != null) {
+        // Pixels between the section centre and the screen centre, converted to world
+        // units at the shape's depth. Raising the camera lowers the shape.
+        const offset = sectionCenter - window.scrollY - size.height / 2
+        const depth = out.position.z - state.center[2]
+        const pan = (offset * 2 * depth * tanHalfFov) / size.height
+        out.position.y += pan
+        out.target.y += pan
+      }
     }
 
-    resolve(states[frame.from], frame.local[frame.from] ?? 0, vectors.from)
-    resolve(states[frame.to], frame.local[frame.to] ?? 0, vectors.to)
+    resolve(frame.from, vectors.from)
+    resolve(frame.to, vectors.to)
 
     const { position, target } = vectors
     position.lerpVectors(vectors.from.position, vectors.to.position, frame.ease)

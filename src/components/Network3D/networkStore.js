@@ -8,6 +8,8 @@ export const networkStore = {
   progress: 0,
   /** Progress (0–1) inside each state's own section, used for camera travel. */
   local: [],
+  /** Document-space vertical centre of each state's section (see the `anchor` state option). */
+  sectionCenters: [],
   /** Document-space [top, bottom] ranges of blue sections, used to recolour the network. */
   primaryBands: [],
   /** Normalised scroll speed (0 = still), boosts the data flow. */
