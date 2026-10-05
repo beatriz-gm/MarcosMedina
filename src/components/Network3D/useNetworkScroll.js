@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { ScrollTrigger } from '../../lib/gsap'
+import { MOBILE_QUERY } from '../../lib/media'
 import { networkStore, STATE_ORDER } from './networkStore'
 
 // A transition into section N runs while its top edge travels between these viewport ratios.
@@ -9,6 +10,9 @@ const TRANSITION_END = 0.35
 const MAX_VELOCITY = 4000
 
 const clamp01 = (value) => Math.min(1, Math.max(0, value))
+// Fast start, gentle finish: the scene eases every transition in, which would otherwise
+// leave the first pixels of scroll almost without visible change.
+const easeOutCubic = (t) => 1 - (1 - t) ** 3
 
 /**
  * Translates the scroll position into the network's narrative progress.
@@ -18,8 +22,10 @@ const clamp01 = (value) => Math.min(1, Math.max(0, value))
 export function useNetworkScroll() {
   useEffect(() => {
     let sectionTops = []
+    let isMobile = false
 
     const measure = () => {
+      isMobile = window.matchMedia(MOBILE_QUERY).matches
       const scrollY = window.scrollY
       const sections = STATE_ORDER.map((name) => document.querySelector(`[data-network-state="${name}"]`))
       const rects = sections.map((el) => el?.getBoundingClientRect())
@@ -43,13 +49,20 @@ export function useNetworkScroll() {
       const maxScroll = document.documentElement.scrollHeight - vh
 
       // Scroll range (px) during which the network morphs into each section's state.
-      const windows = sectionTops.map((top) =>
-        top === null ? null : [top - vh * TRANSITION_START, top - vh * TRANSITION_END],
-      )
+      const windows = sectionTops.map((top, index) => {
+        if (top === null) return null
+        // On phones the hero title scrolls up behind the network almost at once, so the
+        // dispersion out of the hero starts with the first scroll instead. Its end is
+        // unchanged, keeping every later transition exactly where it was.
+        const start = isMobile && index === 1 ? 0 : top - vh * TRANSITION_START
+        return [start, top - vh * TRANSITION_END]
+      })
 
       networkStore.progress = windows.reduce((sum, range, index) => {
         if (index === 0 || !range) return sum
-        return sum + clamp01((scrollY - range[0]) / (range[1] - range[0]))
+        const t = clamp01((scrollY - range[0]) / (range[1] - range[0]))
+        // Phones: the hero dispersion reacts from the very first pixels of scroll.
+        return sum + (isMobile && index === 1 ? easeOutCubic(t) : t)
       }, 0)
 
       networkStore.local = windows.map((range, index) => {

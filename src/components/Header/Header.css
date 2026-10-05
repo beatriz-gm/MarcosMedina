@@ -29,3 +29,10 @@
 .site-header :focus-visible {
   outline-color: var(--color-white);
 }
+
+@media (max-width: 47.5em) {
+  .site-header__brand {
+    /* Two further ~5% steps on phones; still inside --header-height. */
+    height: calc(1.1025 * clamp(3.675rem, 3.15rem + 1.575vw, 4.9875rem));
+  }
+}

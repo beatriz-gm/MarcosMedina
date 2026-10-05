@@ -74,7 +74,7 @@ const STATES = {
     sway: 1,
     contain: true,
     wide: { center: [4.4, 0.1, 0], radius: 4.3, scale: [1.2, 1, 1], noise: 0.5, variance: 0.3 },
-    compact: { center: [0, 2.9, -1], radius: 2, scale: [1, 1.05, 1], noise: 0.25, variance: 0.3 },
+    compact: { center: [0, 2.6, -1], radius: 2, scale: [1, 1.05, 1], noise: 0.25, variance: 0.3 },
   },
   benefits: {
     // Entering the infrastructure: the same cloud, expanded around the viewer.

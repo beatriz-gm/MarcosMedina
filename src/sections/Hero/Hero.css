@@ -165,6 +165,11 @@
 }
 
 @media (max-width: 47.5em) {
+  .hero {
+    /* Extra room for the larger mobile logo and the lowered network above the text. */
+    padding-top: calc(var(--header-height) + clamp(13.5rem, 34svh + 1.5rem, 23.5rem));
+  }
+
   .hero__actions .button {
     width: 100%;
   }
