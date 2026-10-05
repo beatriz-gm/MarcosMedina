@@ -4,12 +4,15 @@ import { BufferAttribute, BufferGeometry, DynamicDrawUsage, ShaderMaterial } fro
 import { depthFadeChunk, themeChunk } from './shaders'
 
 const vertexShader = /* glsl */ `
+  // 1 on seam links (see graph.js), which only show while the shape wraps its rows around.
+  attribute float aSeam;
+  uniform float uSeam;
   varying float vFade;
   ${depthFadeChunk}
 
   void main() {
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    vFade = depthFade(-mvPosition.z);
+    vFade = depthFade(-mvPosition.z) * mix(1.0, uSeam, aSeam);
     gl_Position = projectionMatrix * mvPosition;
   }
 `
@@ -35,8 +38,10 @@ export function Connections({ model, uniforms }) {
     const result = new BufferGeometry()
     const positions = new Float32Array(edgeCount * 2 * 3)
     result.setAttribute('position', new BufferAttribute(positions, 3).setUsage(DynamicDrawUsage))
+    const seam = new Float32Array(edgeCount * 2).fill(1, model.seamStart * 2)
+    result.setAttribute('aSeam', new BufferAttribute(seam, 1))
     return result
-  }, [edgeCount])
+  }, [edgeCount, model.seamStart])
 
   const material = useMemo(
     () =>

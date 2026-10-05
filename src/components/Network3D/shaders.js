@@ -26,6 +26,7 @@ export function createSharedUniforms() {
     uColorOnPrimary: { value: hexToVector('#ffffff') },
     uRiskLevel: { value: 0 },
     uRiskWeight: { value: 0 },
+    uSeam: { value: 0 },
   }
 }
 

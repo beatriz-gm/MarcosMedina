@@ -75,9 +75,21 @@ export function createNetworkModel({ isCompact, riskCount }) {
     link(index, neighbour)
   })
 
+  // Seam: the last row next to the first one, closing the rows into a ring for shapes that
+  // wrap them around (the tunnel). Same density as the rest of the mesh, drawn from its own
+  // PRNG so every other link stays exactly as it was. Kept out of `degree` and `adjacency`:
+  // the links are only visible in wrapped shapes, so packets never travel along them.
+  const seamRandom = createRandom(isCompact ? 107 : 111)
+  const seamStart = edgeList.length / 2
+  for (let col = 0; col < columns; col += 1) {
+    const last = indexOf(col, rows - 1)
+    if (seamRandom() < EDGE_KEEP_CHANCE) edgeList.push(last, indexOf(col, 0))
+    if (col < columns - 1 && seamRandom() < DIAGONAL_CHANCE) edgeList.push(last, indexOf(col + 1, 0))
+  }
+
   const edges = Uint16Array.from(edgeList)
   const adjacency = nodes.map(() => [])
-  for (let e = 0; e < edges.length / 2; e += 1) {
+  for (let e = 0; e < seamStart; e += 1) {
     adjacency[edges[e * 2]].push(edges[e * 2 + 1])
     adjacency[edges[e * 2 + 1]].push(edges[e * 2])
   }
@@ -110,6 +122,8 @@ export function createNetworkModel({ isCompact, riskCount }) {
     count,
     nodes,
     edges,
+    /** Index of the first seam link in `edges` (links from here on are seam links). */
+    seamStart,
     adjacency,
     sizes,
     risk,

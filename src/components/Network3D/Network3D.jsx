@@ -104,6 +104,8 @@ function NetworkScene({ isCompact, quality, reduceMotion, parallax }) {
     uniforms.uPixelRatio.value = gl.getPixelRatio()
     uniforms.uOpacity.value = reduceMotion ? STATIC_OPACITY : blend('opacity')
     uniforms.uRiskWeight.value = blend('riskWeight')
+    // Squared so the seam only shows once the rows have actually wrapped into a ring.
+    uniforms.uSeam.value = blend('seam') ** 2
     uniforms.uRiskLevel.value = MathUtils.damp(uniforms.uRiskLevel.value, networkStore.riskLevel, 6, delta)
 
     // Still states (the closing CTA) freeze drift, sway and parallax and fade the packets.

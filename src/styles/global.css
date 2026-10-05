@@ -22,6 +22,13 @@ body {
   overflow-x: clip;
 }
 
+/* The body's clip is propagated to the viewport, which mobile browsers still let the user
+   pan; clipping here contains the reveal animations' horizontal offsets for real.
+   `clip` (unlike `hidden`) creates no scroll container, so sticky children keep working. */
+main {
+  overflow-x: clip;
+}
+
 h1,
 h2,
 h3,

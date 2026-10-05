@@ -58,6 +58,11 @@ const defaults = {
   opacity: 1,
   flowBias: 0,
   riskWeight: 0,
+  /**
+   * Visibility of the seam links that close the grid's rows into a ring. Only shapes that
+   * wrap the rows around (the tunnel) show them; elsewhere they would cut across the shape.
+   */
+  seam: 0,
   /** On compact screens, pull the camera back until the whole shape fits the width. */
   contain: false,
   /**
@@ -106,6 +111,7 @@ const STATES = {
     camera: { position: [0, 0, 13], target: [0, 0, 0] },
     travel: [0, 0, -18],
     flowBias: 1,
+    seam: 1,
     opacity: 0.85,
     wide: { radius: 4.8, length: 46, start: 6 },
     compact: { radius: 2.5, length: 40, start: 6 },

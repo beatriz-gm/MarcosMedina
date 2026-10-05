@@ -16,8 +16,9 @@
 .site-header__brand {
   display: block;
   flex-shrink: 0;
-  /* ~5% larger than before; still fits inside --header-height at every size. */
-  height: clamp(3.675rem, 3.15rem + 1.575vw, 4.9875rem);
+  /* Base size (+5%, then +5% again); still fits inside --header-height at every size. */
+  --logo-height: clamp(3.675rem, 3.15rem + 1.575vw, 4.9875rem);
+  height: calc(1.05 * var(--logo-height));
   aspect-ratio: 218.75 / 128;
 }
 
@@ -32,7 +33,7 @@
 
 @media (max-width: 47.5em) {
   .site-header__brand {
-    /* Two further ~5% steps on phones; still inside --header-height. */
-    height: calc(1.1025 * clamp(3.675rem, 3.15rem + 1.575vw, 4.9875rem));
+    /* Phones get two extra ~5% steps on top; still inside --header-height. */
+    height: calc(1.1576 * var(--logo-height));
   }
 }
